@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use tmux_agent_sidebar::worktree::{
-    AGENTS, CLAUDE_MODES, CODEX_MODES, agent_command, modes_for, pick_unique_slug, slugify,
-    worktree_path_for,
+    AGENTS, CLAUDE_MODES, CODEX_MODES, PI_MODES, agent_command, modes_for, pick_unique_slug,
+    slugify, worktree_path_for,
 };
 
 #[test]
@@ -162,8 +162,10 @@ fn agent_command_codex_unknown_mode_falls_back_to_bare_codex() {
 }
 
 #[test]
-fn agent_command_unknown_agent_is_echoed_raw() {
+fn agent_command_opencode_and_pi_ignore_modes() {
     assert_eq!(agent_command("opencode", "default"), "opencode");
+    assert_eq!(agent_command("pi", "default"), "pi");
+    assert_eq!(agent_command("pi", "plan"), "pi");
 }
 
 #[test]
@@ -174,6 +176,11 @@ fn modes_for_claude_returns_claude_modes() {
 #[test]
 fn modes_for_codex_returns_codex_modes() {
     assert_eq!(modes_for("codex"), CODEX_MODES);
+}
+
+#[test]
+fn modes_for_pi_returns_pi_modes() {
+    assert_eq!(modes_for("pi"), PI_MODES);
 }
 
 #[test]
@@ -195,4 +202,5 @@ fn agents_list_is_non_empty_and_unique() {
 fn mode_lists_start_with_default() {
     assert_eq!(CLAUDE_MODES.first().copied(), Some("default"));
     assert_eq!(CODEX_MODES.first().copied(), Some("default"));
+    assert_eq!(PI_MODES.first().copied(), Some("default"));
 }
