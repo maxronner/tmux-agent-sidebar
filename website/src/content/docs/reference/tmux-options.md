@@ -53,6 +53,7 @@ Most options must be set **before** loading the plugin in your `tmux.conf`. Colo
 | `@sidebar_color_agent_claude`   | `174`&nbsp;(terracotta) | Claude brand color   |
 | `@sidebar_color_agent_codex`    | `141`&nbsp;(purple)     | Codex brand color    |
 | `@sidebar_color_agent_opencode` | `117`&nbsp;(light blue) | OpenCode brand color |
+| `@sidebar_color_agent_pi`       | `81`&nbsp;(cyan)        | Pi brand color       |
 
 ## Text colors
 
@@ -118,6 +119,7 @@ set -g @agent-sidebar-default-agent codex
 set -g @sidebar_color_accent 117
 set -g @sidebar_color_agent_claude 203
 set -g @sidebar_color_agent_opencode 39
+set -g @sidebar_color_agent_pi 81
 
 # Icons
 set -g @sidebar_icon_running '▶'
