@@ -63,15 +63,17 @@ Reload tmux (`tmux source ~/.tmux.conf`), then press `prefix + I`. The install w
 
   ```sh
   mkdir -p ~/.pi/agent/extensions
-  ln -sf ~/.tmux/plugins/tmux-agent-sidebar/.pi/extensions/tmux-agent-sidebar.ts \
+  ln -sf "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins/tmux-agent-sidebar/.pi/extensions/tmux-agent-sidebar.ts" \
     ~/.pi/agent/extensions/tmux-agent-sidebar.ts
   ```
+
+  If your plugin lives in the classic TPM location, use `~/.tmux/plugins/tmux-agent-sidebar` instead.
 
 Full walkthroughs: [Claude Code setup](https://hiroppy.github.io/tmux-agent-sidebar/getting-started/claude-code/) · [Codex setup](https://hiroppy.github.io/tmux-agent-sidebar/getting-started/codex/) · [OpenCode setup](https://hiroppy.github.io/tmux-agent-sidebar/getting-started/opencode/) · [Pi setup](https://hiroppy.github.io/tmux-agent-sidebar/getting-started/pi/)
 
 ### 3. Toggle the sidebar
 
-`prefix + e` toggles the sidebar in the current window, `prefix + E` toggles it everywhere.
+`prefix + e` toggles the sidebar in the current window, `prefix + E` toggles it everywhere. Remap with `@sidebar_key` / `@sidebar_key_all` before loading the plugin.
 
 ## Documentation
 

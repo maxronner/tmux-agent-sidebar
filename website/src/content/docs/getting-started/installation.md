@@ -43,6 +43,12 @@ To update later, press `prefix + U` in TPM's plugin list and select `tmux-agent-
    run-shell ~/.tmux/plugins/tmux-agent-sidebar/tmux-agent-sidebar.tmux
    ```
 
+   XDG tmux layouts work too; use your config-home plugin path, for example:
+
+   ```bash
+   run-shell ${XDG_CONFIG_HOME:-~/.config}/tmux/plugins/tmux-agent-sidebar/tmux-agent-sidebar.tmux
+   ```
+
 3. Install the binary — download a pre-built release, or build from source:
 
    ```sh
