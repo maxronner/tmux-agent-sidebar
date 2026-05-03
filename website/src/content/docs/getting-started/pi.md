@@ -14,12 +14,14 @@ symlink the bundled extension into it:
 
 ```sh
 mkdir -p ~/.pi/agent/extensions
-ln -sf ~/.tmux/plugins/tmux-agent-sidebar/.pi/extensions/tmux-agent-sidebar.ts \
+ln -sf "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins/tmux-agent-sidebar/.pi/extensions/tmux-agent-sidebar.ts" \
   ~/.pi/agent/extensions/tmux-agent-sidebar.ts
 ```
 
-If you installed the plugin somewhere else, replace
-`~/.tmux/plugins/tmux-agent-sidebar` with your plugin path.
+If you installed the plugin somewhere else, replace the source path with your
+plugin path. The bridge also checks `TMUX_AGENT_SIDEBAR_DIR`,
+`${XDG_CONFIG_HOME:-$HOME/.config}/tmux/plugins/tmux-agent-sidebar`, and the
+classic `~/.tmux/plugins/tmux-agent-sidebar` location when resolving the binary.
 
 ## Reload Pi
 

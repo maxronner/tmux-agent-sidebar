@@ -1,6 +1,8 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const AGENT = "pi";
 
@@ -9,20 +11,46 @@ type CommandSpec = {
   prefix: string[];
 };
 
-function resolveCommand(): CommandSpec {
+function pluginDirs(): string[] {
   const home = process.env.HOME ?? "";
-  const pluginDir = home ? `${home}/.tmux/plugins/tmux-agent-sidebar` : "";
-  const hookScript = pluginDir ? `${pluginDir}/hook.sh` : "";
-  if (hookScript && existsSync(hookScript)) {
-    return { cmd: "bash", prefix: [hookScript, AGENT] };
+  const xdgConfig = process.env.XDG_CONFIG_HOME || (home ? `${home}/.config` : "");
+  const dirs = [
+    process.env.TMUX_AGENT_SIDEBAR_DIR ?? "",
+    ...walkUpFromExtension(),
+    xdgConfig ? `${xdgConfig}/tmux/plugins/tmux-agent-sidebar` : "",
+    home ? `${home}/.tmux/plugins/tmux-agent-sidebar` : "",
+  ];
+  return [...new Set(dirs.filter(Boolean))];
+}
+
+function walkUpFromExtension(): string[] {
+  const dirs: string[] = [];
+  let dir = dirname(fileURLToPath(import.meta.url));
+  for (let i = 0; i < 5; i += 1) {
+    dirs.push(dir);
+    const parent = dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return dirs;
+}
+
+function resolveCommand(): CommandSpec {
+  for (const pluginDir of pluginDirs()) {
+    const hookScript = resolve(pluginDir, "hook.sh");
+    if (existsSync(hookScript)) {
+      return { cmd: "bash", prefix: [hookScript, AGENT] };
+    }
   }
 
-  for (const bin of [
-    pluginDir ? `${pluginDir}/bin/tmux-agent-sidebar` : "",
-    pluginDir ? `${pluginDir}/target/release/tmux-agent-sidebar` : "",
-  ]) {
-    if (bin && existsSync(bin)) {
-      return { cmd: bin, prefix: ["hook", AGENT] };
+  for (const pluginDir of pluginDirs()) {
+    for (const bin of [
+      resolve(pluginDir, "bin/tmux-agent-sidebar"),
+      resolve(pluginDir, "target/release/tmux-agent-sidebar"),
+    ]) {
+      if (existsSync(bin)) {
+        return { cmd: bin, prefix: ["hook", AGENT] };
+      }
     }
   }
 
