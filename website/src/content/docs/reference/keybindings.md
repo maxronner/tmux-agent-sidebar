@@ -5,6 +5,8 @@ description: Every shortcut in the sidebar, the worktree spawn modal, and the cl
 
 ## Sidebar
 
+The toggle bindings default to `prefix + e` and `prefix + E`. Remap them before loading the plugin with `@sidebar_key` and `@sidebar_key_all`.
+
 | Key            | Action                                                        |
 | -------------- | ------------------------------------------------------------- |
 | `prefix + e`   | Toggle sidebar                                                |
