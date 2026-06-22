@@ -7,7 +7,7 @@ pub const AGENT_OPTION: &str = "@agent-sidebar-default-agent";
 pub const BRANCH_PREFIX_OPTION: &str = "@agent-sidebar-branch-prefix";
 pub const WORKTREE_DIR_OPTION: &str = "@agent-sidebar-worktree-dir";
 
-pub const AGENTS: &[&str] = &["claude", "codex", "opencode", "pi"];
+pub const AGENTS: &[&str] = &["claude", "codex", "opencode", "pi", "smelt"];
 pub const CLAUDE_MODES: &[&str] = &[
     "default",
     "plan",
@@ -18,12 +18,14 @@ pub const CLAUDE_MODES: &[&str] = &[
 pub const CODEX_MODES: &[&str] = &["default", "auto", "bypassPermissions"];
 pub const OPENCODE_MODES: &[&str] = &["default"];
 pub const PI_MODES: &[&str] = &["default"];
+pub const SMELT_MODES: &[&str] = &["default"];
 
 pub fn modes_for(agent: &str) -> &'static [&'static str] {
     match agent {
         "codex" => CODEX_MODES,
         "opencode" => OPENCODE_MODES,
         "pi" => PI_MODES,
+        "smelt" => SMELT_MODES,
         _ => CLAUDE_MODES,
     }
 }
@@ -47,6 +49,7 @@ pub fn agent_command(agent: &str, mode: &str) -> String {
         ("codex", _) => "codex".into(),
         ("opencode", _) => "opencode".into(),
         ("pi", _) => "pi".into(),
+        ("smelt", _) => "smelt".into(),
         (a, _) => a.to_string(),
     }
 }
@@ -82,6 +85,11 @@ mod tests {
     #[test]
     fn modes_for_pi_returns_pi_modes() {
         assert_eq!(modes_for("pi"), PI_MODES);
+    }
+
+    #[test]
+    fn modes_for_smelt_returns_smelt_modes() {
+        assert_eq!(modes_for("smelt"), SMELT_MODES);
     }
 
     #[test]
@@ -129,6 +137,13 @@ mod tests {
         assert_eq!(agent_command("pi", "default"), "pi");
         assert_eq!(agent_command("pi", "plan"), "pi");
         assert_eq!(agent_command("pi", ""), "pi");
+    }
+
+    #[test]
+    fn agent_command_smelt_ignores_mode() {
+        assert_eq!(agent_command("smelt", "default"), "smelt");
+        assert_eq!(agent_command("smelt", "plan"), "smelt");
+        assert_eq!(agent_command("smelt", ""), "smelt");
     }
 
     #[test]
