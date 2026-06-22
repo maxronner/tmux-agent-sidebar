@@ -150,13 +150,26 @@ end
 
 -- ── cell subscriptions ───────────────────────────────────────────────
 
--- Session started: emit session-start when a new session begins.
-smelt.cell("session_started"):subscribe(function()
+local function emit_session_start()
 	emit("session-start", {
 		cwd = smelt.session.cwd(),
 		session_id = smelt.session.id(),
 		source = "startup",
 	})
+end
+
+-- Smelt publishes the initial session_started cell before the second Lua
+-- bring-up makes cell subscriptions live. The ready lifecycle hook runs after
+-- that bring-up, so it is the reliable path for registering a newly opened
+-- idle session with the sidebar. It also rehydrates pane metadata after
+-- /reload.
+smelt.lifecycle.on("ready", function()
+	emit_session_start()
+end)
+
+-- Later session changes (/new, /resume, /fork) do reach cell subscribers.
+smelt.cell("session_started"):subscribe(function()
+	emit_session_start()
 end)
 
 -- Session ended: emit session-end.
@@ -206,7 +219,7 @@ smelt.cell("tool_start"):subscribe(function(payload)
 	local tool_name = ""
 	local tool_input = {}
 	if type(payload) == "table" then
-		tool_name = payload.name or payload.tool_name or ""
+		tool_name = payload.tool or payload.name or payload.tool_name or ""
 		tool_input = payload.args or payload.input or payload.tool_input or {}
 	end
 	if tool_name == "" then

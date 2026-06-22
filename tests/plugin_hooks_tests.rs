@@ -13,6 +13,7 @@ use tmux_agent_sidebar::VERSION;
 use tmux_agent_sidebar::adapter::claude::ClaudeAdapter;
 
 const HOOKS_JSON_PATH: &str = "hooks/hooks.json";
+const SMELT_PLUGIN_PATH: &str = ".smelt/plugins/tmux-agent-sidebar.lua";
 
 fn load_hooks_json() -> serde_json::Value {
     let raw = fs::read_to_string(HOOKS_JSON_PATH)
@@ -137,5 +138,37 @@ fn plugin_manifest_version_matches_cargo_toml() {
         ".claude-plugin/plugin.json version ({plugin_version}) does not match \
          Cargo.toml version ({VERSION}). Bump both together — see \
          .claude/skills/version-release/SKILL.md."
+    );
+}
+
+fn load_smelt_plugin() -> String {
+    fs::read_to_string(SMELT_PLUGIN_PATH)
+        .unwrap_or_else(|e| panic!("failed to read {SMELT_PLUGIN_PATH}: {e}"))
+}
+
+#[test]
+fn smelt_plugin_registers_idle_session_from_ready_lifecycle() {
+    let plugin = load_smelt_plugin();
+
+    assert!(
+        plugin.contains(r#"smelt.lifecycle.on("ready""#),
+        "Smelt publishes its initial session_started event before cell \
+         subscribers become live; the bridge must register from the ready \
+         lifecycle so a newly opened idle session appears in the sidebar"
+    );
+    assert!(
+        plugin.contains("emit_session_start()"),
+        "the ready lifecycle and later session_started events should share \
+         the same session-start emitter"
+    );
+}
+
+#[test]
+fn smelt_plugin_reads_tool_start_payload_shape() {
+    let plugin = load_smelt_plugin();
+
+    assert!(
+        plugin.contains("payload.tool or payload.name or payload.tool_name"),
+        "Smelt tool_start payloads expose the tool name as `payload.tool`"
     );
 }
