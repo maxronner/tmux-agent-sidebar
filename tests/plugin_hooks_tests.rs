@@ -147,19 +147,17 @@ fn load_smelt_plugin() -> String {
 }
 
 #[test]
-fn smelt_plugin_registers_idle_session_from_ready_lifecycle() {
+fn smelt_plugin_registers_idle_session_when_global_plugin_loads() {
     let plugin = load_smelt_plugin();
 
     assert!(
-        plugin.contains(r#"smelt.lifecycle.on("ready""#),
-        "Smelt publishes its initial session_started event before cell \
-         subscribers become live; the bridge must register from the ready \
-         lifecycle so a newly opened idle session appears in the sidebar"
+        plugin.contains("emit_session_start()\n\n-- Later session changes (/new, /resume, /fork)"),
+        "Smelt loads global plugins after its initial ready/session_started \
+         events; the bridge must register the current session immediately"
     );
     assert!(
-        plugin.contains("emit_session_start()"),
-        "the ready lifecycle and later session_started events should share \
-         the same session-start emitter"
+        plugin.contains(r#"smelt.cell("session_started"):subscribe(function()"#),
+        "later session changes should re-register through the session_started cell"
     );
 }
 
