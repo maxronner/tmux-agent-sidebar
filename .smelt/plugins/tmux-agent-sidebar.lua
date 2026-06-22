@@ -158,16 +158,12 @@ local function emit_session_start()
 	})
 end
 
--- Smelt publishes the initial session_started cell before the second Lua
--- bring-up makes cell subscriptions live. The ready lifecycle hook runs after
--- that bring-up, so it is the reliable path for registering a newly opened
--- idle session with the sidebar. It also rehydrates pane metadata after
--- /reload.
-smelt.lifecycle.on("ready", function()
-	emit_session_start()
-end)
+-- Global plugins load after Smelt's startup `ready` event and initial
+-- `session_started` publication. Register the current session immediately so a
+-- newly opened idle session appears in the sidebar.
+emit_session_start()
 
--- Later session changes (/new, /resume, /fork) do reach cell subscribers.
+-- Later session changes (/new, /resume, /fork) reach cell subscribers.
 smelt.cell("session_started"):subscribe(function()
 	emit_session_start()
 end)
