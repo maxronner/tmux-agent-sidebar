@@ -23,6 +23,7 @@ pub struct ColorTheme {
     pub agent_codex: Color,
     pub agent_opencode: Color,
     pub agent_pi: Color,
+    pub agent_smelt: Color,
     pub pet_body: Color,
     pub pet_eye: Color,
     pub text_active: Color,
@@ -64,6 +65,7 @@ impl Default for ColorTheme {
             agent_codex: Color::Indexed(141),
             agent_opencode: Color::Indexed(117),
             agent_pi: Color::Indexed(81),
+            agent_smelt: Color::Indexed(215),
             pet_body: Color::Indexed(208),
             pet_eye: Color::Indexed(114),
             text_active: Color::Indexed(255),
@@ -119,6 +121,7 @@ impl ColorTheme {
         theme.agent_codex = read(tmux::SIDEBAR_COLOR_AGENT_CODEX, theme.agent_codex);
         theme.agent_opencode = read(tmux::SIDEBAR_COLOR_AGENT_OPENCODE, theme.agent_opencode);
         theme.agent_pi = read(tmux::SIDEBAR_COLOR_AGENT_PI, theme.agent_pi);
+        theme.agent_smelt = read(tmux::SIDEBAR_COLOR_AGENT_SMELT, theme.agent_smelt);
         theme.pet_body = read(tmux::SIDEBAR_COLOR_PET_BODY, theme.pet_body);
         theme.pet_eye = read(tmux::SIDEBAR_COLOR_PET_EYE, theme.pet_eye);
         theme.text_active = read(tmux::SIDEBAR_COLOR_TEXT_ACTIVE, theme.text_active);
@@ -166,6 +169,7 @@ impl ColorTheme {
             AgentType::Codex => self.agent_codex,
             AgentType::OpenCode => self.agent_opencode,
             AgentType::Pi => self.agent_pi,
+            AgentType::Smelt => self.agent_smelt,
             AgentType::Unknown => self.status_unknown,
         }
     }
@@ -226,6 +230,7 @@ mod tests {
         assert_eq!(theme.agent_color(&AgentType::Codex), Color::Indexed(141));
         assert_eq!(theme.agent_color(&AgentType::OpenCode), Color::Indexed(117));
         assert_eq!(theme.agent_color(&AgentType::Pi), Color::Indexed(81));
+        assert_eq!(theme.agent_color(&AgentType::Smelt), Color::Indexed(215));
         assert_eq!(theme.agent_color(&AgentType::Unknown), theme.status_unknown);
     }
 

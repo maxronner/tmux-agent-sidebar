@@ -254,12 +254,12 @@ fn parse_pane_fields_with_processes(
     let current_command = parts[pane_line_field::PANE_CURRENT_COMMAND].as_str();
     let pane_pid: Option<u32> = parts[pane_line_field::PANE_PID].parse().ok();
 
-    // Codex / OpenCode / Pi panes can leave stale tmux metadata behind after
-    // the agent exits and the pane falls back to the user's shell. Claude is
-    // excluded because its SessionEnd hook drives cleanup instead.
+    // Codex / OpenCode / Pi / Smelt panes can leave stale tmux metadata behind
+    // after the agent exits and the pane falls back to the user's shell. Claude
+    // is excluded because its SessionEnd hook drives cleanup instead.
     if matches!(
         agent,
-        AgentType::Codex | AgentType::OpenCode | AgentType::Pi
+        AgentType::Codex | AgentType::OpenCode | AgentType::Pi | AgentType::Smelt
     ) && is_shell_command(current_command)
     {
         let agent_still_alive = pane_pid
@@ -282,7 +282,8 @@ fn parse_pane_fields_with_processes(
     };
 
     // Claude: read permission_mode from hook-set tmux variable.
-    // Codex / OpenCode / Pi: no permission_mode in hooks, keep the default.
+    // Codex / OpenCode / Pi / Smelt: no permission_mode in hooks, keep the
+    // default.
     let permission_mode = if agent == AgentType::Claude {
         PermissionMode::from_label(&parts[pane_line_field::PERMISSION_MODE])
     } else {
@@ -430,7 +431,7 @@ fn pane_output_needs_process_snapshot(all_panes_output: &str) -> bool {
         AgentType::from_label(&pane_fields[pane_line_field::AGENT]).is_some_and(|agent| {
             matches!(
                 agent,
-                AgentType::Codex | AgentType::OpenCode | AgentType::Pi
+                AgentType::Codex | AgentType::OpenCode | AgentType::Pi | AgentType::Smelt
             )
         })
     })
