@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use tmux_agent_sidebar::worktree::{
-    AGENTS, CLAUDE_MODES, CODEX_MODES, PI_MODES, SMELT_MODES, agent_command, modes_for, pick_unique_slug,
-    slugify, worktree_path_for,
+    AGENTS, CLAUDE_MODES, CODEX_MODES, PI_MODES, SMELT_MODES, agent_command, modes_for,
+    pick_unique_slug, slugify, worktree_path_for,
 };
 
 #[test]
