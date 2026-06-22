@@ -235,9 +235,11 @@ mod tests {
 
     #[test]
     fn activity_log_empty_tool_name_returns_none() {
-        assert!(SmeltAdapter
-            .parse("activity-log", &json!({"tool_name": ""}))
-            .is_none(),);
+        assert!(
+            SmeltAdapter
+                .parse("activity-log", &json!({"tool_name": ""}))
+                .is_none(),
+        );
     }
 
     #[test]
