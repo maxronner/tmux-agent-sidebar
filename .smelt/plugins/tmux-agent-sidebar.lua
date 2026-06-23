@@ -1,6 +1,6 @@
 -- tmux-agent-sidebar bridge for smelt.
 --
--- Subscribes to smelt reactive cells and emits normalized hook events to
+-- Subscribes to smelt events and emits normalized hook events to
 -- the tmux-agent-sidebar binary (or hook.sh) so the sidebar can track
 -- smelt sessions alongside Claude Code, Codex, OpenCode, and Pi.
 --
@@ -148,7 +148,7 @@ local function session_payload()
 	}
 end
 
--- ── cell subscriptions ───────────────────────────────────────────────
+-- ── event subscriptions ──────────────────────────────────────────────
 
 local function emit_session_start()
 	emit("session-start", {
@@ -163,25 +163,25 @@ end
 -- newly opened idle session appears in the sidebar.
 emit_session_start()
 
--- Later session changes (/new, /resume, /fork) reach cell subscribers.
-smelt.cell("session_started"):subscribe(function()
+-- Later session changes (/new, /resume, /fork) reach event subscribers.
+smelt.events.on("session_started", function()
 	emit_session_start()
 end)
 
 -- Session ended: emit session-end.
-smelt.cell("session_ended"):subscribe(function()
+smelt.events.on("session_ended", function()
 	emit("session-end", { end_reason = "quit" })
 end)
 
 -- Input submitted: emit user-prompt-submit with the prompt text.
-smelt.cell("input_submit"):subscribe(function(text)
+smelt.events.on("input_submit", function(text)
 	local payload = session_payload()
 	payload.prompt = text or ""
 	emit("user-prompt-submit", payload)
 end)
 
 -- Turn ended: emit stop when a turn completes without cancellation.
-smelt.cell("turn_end"):subscribe(function(payload)
+smelt.events.on("turn_end", function(payload)
 	if payload and payload.cancelled then
 		return
 	end
@@ -189,7 +189,7 @@ smelt.cell("turn_end"):subscribe(function(payload)
 end)
 
 -- Turn error: emit stop-failure.
-smelt.cell("turn_error"):subscribe(function(payload)
+smelt.events.on("turn_error", function(payload)
 	local err = ""
 	if payload then
 		if type(payload) == "string" then
@@ -208,7 +208,7 @@ smelt.cell("turn_error"):subscribe(function(payload)
 end)
 
 -- Tool start: emit activity-log with tool name and input.
-smelt.cell("tool_start"):subscribe(function(payload)
+smelt.events.on("tool_start", function(payload)
 	if not payload then
 		return
 	end
