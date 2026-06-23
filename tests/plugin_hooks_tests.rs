@@ -156,8 +156,31 @@ fn smelt_plugin_registers_idle_session_when_global_plugin_loads() {
          events; the bridge must register the current session immediately"
     );
     assert!(
-        plugin.contains(r#"smelt.cell("session_started"):subscribe(function()"#),
-        "later session changes should re-register through the session_started cell"
+        plugin.contains(r#"smelt.events.on("session_started", function()"#),
+        "later session changes should re-register through the session_started event"
+    );
+}
+
+#[test]
+fn smelt_plugin_uses_alpha6_event_api() {
+    let plugin = load_smelt_plugin();
+
+    for event in [
+        "session_started",
+        "session_ended",
+        "input_submit",
+        "turn_end",
+        "turn_error",
+        "tool_start",
+    ] {
+        assert!(
+            plugin.contains(&format!(r#"smelt.events.on("{event}", function("#)),
+            "Smelt bridge should subscribe to {event} through smelt.events.on"
+        );
+    }
+    assert!(
+        !plugin.contains("smelt.cell("),
+        "Smelt alpha.6 removed smelt.cell; event subscriptions must use smelt.events.on"
     );
 }
 
