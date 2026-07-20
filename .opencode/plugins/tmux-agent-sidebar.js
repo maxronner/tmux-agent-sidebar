@@ -113,10 +113,6 @@ export const TmuxAgentSidebar = async ({ directory }) => {
           return;
         }
 
-        case "session.idle":
-          hook("stop", { cwd, session_id, last_message: "" });
-          return;
-
         case "session.error":
           hook("stop-failure", {
             cwd,
